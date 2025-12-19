@@ -26,6 +26,17 @@ function OrderDetails() {
     }
   };
 
+  const cancelOrder = async () => {
+    try {
+      const res = await api.post(`/orders/cancel/${id}`);
+      setOrder(res.data);
+      alert("Order canceled successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Cancel failed");
+    }
+  };
+
   useEffect(() => {
     loadOrder();
   }, []);
@@ -43,7 +54,6 @@ function OrderDetails() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-
           {/* Order Info */}
           <div className="space-y-1">
             <p><strong>Order ID:</strong> {order.orderId}</p>
@@ -99,14 +109,27 @@ function OrderDetails() {
             Total: ₹{order.totalAmount}
           </div>
 
-          {/* Back button */}
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => window.history.back()}
-          >
-            Back
-          </Button>
+          {/* Actions */}
+          <div className="space-y-3">
+            {/* Cancel Order only if PAID and not CANCELED */}
+            {order.status === "PAID" && (
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={cancelOrder}
+              >
+                Cancel Order
+              </Button>
+            )}
+
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => window.history.back()}
+            >
+              Back
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

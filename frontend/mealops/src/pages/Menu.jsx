@@ -25,9 +25,19 @@ function Menu() {
       alert("Failed to load menu");
     }
   };
+const [defaultPayment, setDefaultPayment] = useState("");
 
+const fetchDefaultPayment = async () => {
+  try {
+    const res = await api.get("/orders/payment/default");
+    setDefaultPayment(res.data.defaultMethod);
+  } catch (err) {
+    console.error(err);
+  }
+};
   useEffect(() => {
     fetchMenu();
+    fetchDefaultPayment();
   }, []);
 
   const addToCart = (item) => {
@@ -46,7 +56,7 @@ function Menu() {
     try {
       const payload = {
         restaurantId: Number(id),
-        paymentMethod: "UPI",
+        paymentMethod: defaultPayment,
         items: cart.map((item) => ({
           menuItemId: item.id,
           quantity: item.quantity,
@@ -57,12 +67,7 @@ function Menu() {
       const orderId = res.data.orderId;
       const role = localStorage.getItem("role");
 
-      if (role === "ADMIN" || role === "Manager" || role === "MANAGER") {
         window.location.href = `/orders/${orderId}/checkout`;
-      } else {
-        alert("Order created successfully!");
-        window.location.href = "/dashboard";
-      }
     } catch (err) {
       console.error(err);
       alert("Order failed");

@@ -10,7 +10,7 @@ function Checkout() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
 
-  // Fetch order BEFORE payment
+  // Fetch order
   const fetchOrder = async () => {
     try {
       const res = await api.get(`/orders/${id}`);
@@ -26,7 +26,6 @@ function Checkout() {
     try {
       const res = await api.post(`/orders/${id}/checkout`);
       setOrder(res.data);
-      alert("Payment successful!");
     } catch (err) {
       console.error(err);
       alert("Payment failed");
@@ -38,7 +37,6 @@ function Checkout() {
     try {
       const res = await api.post(`/orders/cancel/${id}`);
       setOrder(res.data);
-      alert("Order canceled successfully!");
     } catch (err) {
       console.error(err);
       alert("Cancel failed");
@@ -51,6 +49,10 @@ function Checkout() {
 
   if (!order) return <p className="text-center p-6">Loading...</p>;
 
+  const isPaid = order.status === "PAID";
+  const isCanceled = order.status === "CANCELED";
+  const isCreated = order.status === "CREATED";
+
   return (
     <div className="min-h-screen flex justify-center items-start p-6 bg-gray-50">
       <Card className="w-full max-w-2xl shadow-lg">
@@ -59,24 +61,19 @@ function Checkout() {
         </CardHeader>
 
         <CardContent className="space-y-6">
+
           {/* Order Info */}
           <div className="space-y-1">
-            <p>
-              <strong>Order ID:</strong> {order.orderId}
-            </p>
-            <p>
-              <strong>Restaurant:</strong> {order.restaurantName}
-            </p>
-            <p>
-              <strong>Payment Method:</strong> {order.paymentMethod}
-            </p>
+            <p><strong>Order ID:</strong> {order.orderId}</p>
+            <p><strong>Restaurant:</strong> {order.restaurantName}</p>
+            <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
             <p>
               <strong>Status:</strong>{" "}
               <span
                 className={
-                  order.status === "PAID"
+                  isPaid
                     ? "text-green-600 font-semibold"
-                    : order.status === "CANCELED"
+                    : isCanceled
                     ? "text-red-600 font-semibold"
                     : "text-yellow-600 font-semibold"
                 }
@@ -87,6 +84,8 @@ function Checkout() {
           </div>
 
           <Separator />
+
+          {/* Items */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Items</h3>
             <div className="space-y-2">
@@ -97,9 +96,7 @@ function Checkout() {
                 >
                   <div>
                     <p className="font-medium">{item.itemName}</p>
-                    <p className="text-sm text-gray-600">
-                      Qty: {item.quantity}
-                    </p>
+                    <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                   </div>
 
                   <p className="font-semibold text-gray-800">₹{item.price}</p>
@@ -110,22 +107,42 @@ function Checkout() {
 
           <Separator />
 
+          {/* Total */}
           <div className="text-right text-xl font-semibold">
             Total: ₹{order.totalAmount}
           </div>
 
-          {order.status !== "PAID" && order.status !== "CANCELED" && (
+          {/* CANCELED: no buttons */}
+          {isCanceled && (
+            <p className="text-red-700 font-semibold text-center text-lg">
+              Order Canceled ✘
+            </p>
+          )}
+
+          {/* CREATED: show complete + cancel */}
+          {isCreated && (
+            <div className="flex gap-3 justify-end mt-3">
+              <Button className="px-6" onClick={handleCheckout}>
+                Complete Payment
+              </Button>
+
+              <Button
+                variant="destructive"
+                className="px-6"
+                onClick={cancelOrder}
+              >
+                Cancel Order
+              </Button>
+            </div>
+          )}
+
+          {/* PAID: show cancel only */}
+          {isPaid && (
             <>
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm font-medium">
-                Current Payment Method:{" "}
-                <span className="font-semibold">{order.paymentMethod}</span>
-              </div>
-
-              <div className="flex gap-3 justify-end mt-3">
-                <Button className="px-6" onClick={handleCheckout}>
-                  Complete Payment
-                </Button>
-
+              <p className="text-green-700 font-semibold text-center text-lg">
+                Payment Completed ✔
+              </p>
+              <div className="flex justify-end mt-3">
                 <Button
                   variant="destructive"
                   className="px-6"
@@ -135,18 +152,6 @@ function Checkout() {
                 </Button>
               </div>
             </>
-          )}
-
-          {order.status === "PAID" && (
-            <p className="text-green-700 font-semibold text-center text-lg">
-              Payment Completed ✔
-            </p>
-          )}
-
-          {order.status === "CANCELED" && (
-            <p className="text-red-700 font-semibold text-center text-lg">
-              Order Canceled ✘
-            </p>
           )}
         </CardContent>
       </Card>
