@@ -101,7 +101,7 @@ public class OrderController {
     }
 
     @GetMapping("/payment/default")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','MEMBER')")
     public PaymentConfig getDefaultPayment() {
         return paymentService.getDefaultPayment();
     }

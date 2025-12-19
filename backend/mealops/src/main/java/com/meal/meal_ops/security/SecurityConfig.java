@@ -62,7 +62,9 @@ public class SecurityConfig {
                         .hasAnyRole("ADMIN","MANAGER","MEMBER")
 
                         // payment
-                        .requestMatchers("/orders/payment/**")
+                        .requestMatchers(HttpMethod.GET,"/orders/payment/**")
+                        .hasAnyRole("ADMIN","MANAGER","MEMBER")
+                        .requestMatchers(HttpMethod.PUT,"/orders/payment/**")
                         .hasRole("ADMIN")
 
 
