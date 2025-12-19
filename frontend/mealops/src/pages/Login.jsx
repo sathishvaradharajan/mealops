@@ -27,7 +27,6 @@ function Login() {
 
       localStorage.setItem("role", normalizedRole);
 
-      // Notify navbar or other listeners
       window.dispatchEvent(new Event("auth-change"));
 
       navigate("/dashboard");

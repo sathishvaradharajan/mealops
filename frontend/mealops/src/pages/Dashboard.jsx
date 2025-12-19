@@ -18,13 +18,11 @@ function Dashboard() {
 
         <CardContent className="space-y-5">
 
-          {/* Role */}
           <div className="text-center">
             <p className="text-gray-500 dark:text-gray-300 text-sm">Logged in as</p>
             <p className="font-semibold text-lg text-gray-900 dark:text-white">{role}</p>
           </div>
 
-          {/* Buttons */}
           <div className="space-y-3">
             {role === "ADMIN" && (
               <Button

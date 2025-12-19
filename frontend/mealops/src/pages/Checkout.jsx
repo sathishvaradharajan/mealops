@@ -87,8 +87,6 @@ function Checkout() {
           </div>
 
           <Separator />
-
-          {/* Items List */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Items</h3>
             <div className="space-y-2">
@@ -112,26 +110,31 @@ function Checkout() {
 
           <Separator />
 
-          {/* Total */}
           <div className="text-right text-xl font-semibold">
             Total: ₹{order.totalAmount}
           </div>
 
-          {/* Action Buttons */}
           {order.status !== "PAID" && order.status !== "CANCELED" && (
-            <div className="flex gap-3 justify-end">
-              <Button className="px-6" onClick={handleCheckout}>
-                Complete Payment
-              </Button>
+            <>
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm font-medium">
+                Current Payment Method:{" "}
+                <span className="font-semibold">{order.paymentMethod}</span>
+              </div>
 
-              <Button
-                variant="destructive"
-                className="px-6"
-                onClick={cancelOrder}
-              >
-                Cancel Order
-              </Button>
-            </div>
+              <div className="flex gap-3 justify-end mt-3">
+                <Button className="px-6" onClick={handleCheckout}>
+                  Complete Payment
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  className="px-6"
+                  onClick={cancelOrder}
+                >
+                  Cancel Order
+                </Button>
+              </div>
+            </>
           )}
 
           {order.status === "PAID" && (
